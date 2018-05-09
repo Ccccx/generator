@@ -15,18 +15,18 @@
  */
 package org.mybatis.generator.api.dom.java;
 
-import static org.mybatis.generator.api.dom.OutputUtilities.calculateImports;
-import static org.mybatis.generator.api.dom.OutputUtilities.newLine;
-import static org.mybatis.generator.internal.util.StringUtility.stringHasValue;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static org.mybatis.generator.api.dom.OutputUtilities.calculateImports;
+import static org.mybatis.generator.api.dom.OutputUtilities.newLine;
+import static org.mybatis.generator.internal.util.StringUtility.stringHasValue;
+
 /**
  * The Class TopLevelClass.
- *
+ *  生成java对象
  * @author Jeff Butler
  */
 public class TopLevelClass extends InnerClass implements CompilationUnit {

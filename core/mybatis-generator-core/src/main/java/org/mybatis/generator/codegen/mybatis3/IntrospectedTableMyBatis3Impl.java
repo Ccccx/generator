@@ -15,9 +15,6 @@
  */
 package org.mybatis.generator.codegen.mybatis3;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.mybatis.generator.api.GeneratedJavaFile;
 import org.mybatis.generator.api.GeneratedXmlFile;
 import org.mybatis.generator.api.IntrospectedTable;
@@ -38,6 +35,9 @@ import org.mybatis.generator.codegen.mybatis3.model.RecordWithBLOBsGenerator;
 import org.mybatis.generator.codegen.mybatis3.xmlmapper.XMLMapperGenerator;
 import org.mybatis.generator.config.PropertyRegistry;
 import org.mybatis.generator.internal.ObjectFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Jeff Butler
@@ -60,10 +60,10 @@ public class IntrospectedTableMyBatis3Impl extends IntrospectedTable {
     public void calculateGenerators(List<String> warnings,
             ProgressCallback progressCallback) {
         calculateJavaModelGenerators(warnings, progressCallback);
-        
+        // 构建 model 和 example 构造器
         AbstractJavaClientGenerator javaClientGenerator =
                 calculateClientGenerators(warnings, progressCallback);
-            
+        // 构建 xml 构造器
         calculateXmlMapperGenerator(javaClientGenerator, warnings, progressCallback);
     }
 
@@ -139,7 +139,7 @@ public class IntrospectedTableMyBatis3Impl extends IntrospectedTable {
                     progressCallback);
             javaModelGenerators.add(javaGenerator);
         }
-
+        // 生成表基础model
         if (getRules().generateBaseRecordClass()) {
             AbstractJavaGenerator javaGenerator = new BaseRecordGenerator();
             initializeAbstractGenerator(javaGenerator, warnings,
@@ -167,7 +167,7 @@ public class IntrospectedTableMyBatis3Impl extends IntrospectedTable {
         abstractGenerator.setProgressCallback(progressCallback);
         abstractGenerator.setWarnings(warnings);
     }
-
+    // 生成JAVA MODEL 的必要数据
     @Override
     public List<GeneratedJavaFile> getGeneratedJavaFiles() {
         List<GeneratedJavaFile> answer = new ArrayList<GeneratedJavaFile>();

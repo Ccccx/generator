@@ -15,20 +15,6 @@
  */
 package org.mybatis.generator.api;
 
-import static org.mybatis.generator.internal.util.ClassloaderUtility.getCustomClassloader;
-import static org.mybatis.generator.internal.util.messages.Messages.getString;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.mybatis.generator.codegen.RootClassInfo;
 import org.mybatis.generator.config.Configuration;
 import org.mybatis.generator.config.Context;
@@ -39,6 +25,16 @@ import org.mybatis.generator.internal.DefaultShellCallback;
 import org.mybatis.generator.internal.NullProgressCallback;
 import org.mybatis.generator.internal.ObjectFactory;
 import org.mybatis.generator.internal.XmlFileMergerJaxp;
+
+import java.io.*;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.mybatis.generator.internal.util.ClassloaderUtility.getCustomClassloader;
+import static org.mybatis.generator.internal.util.messages.Messages.getString;
 
 /**
  * This class is the main interface to MyBatis generator. A typical execution of the tool involves these steps:
@@ -252,7 +248,7 @@ public class MyBatisGenerator {
             totalSteps += context.getIntrospectionSteps();
         }
         callback.introspectionStarted(totalSteps);
-
+        // 连接数据库
         for (Context context : contextsToRun) {
             context.introspectTables(callback, warnings,
                     fullyQualifiedTableNames);
@@ -264,13 +260,16 @@ public class MyBatisGenerator {
             totalSteps += context.getGenerationSteps();
         }
         callback.generationStarted(totalSteps);
-
+        /**
+         * 生成JAVA和xml对应的对象
+         */
         for (Context context : contextsToRun) {
             context.generateFiles(callback, generatedJavaFiles,
                     generatedXmlFiles, warnings);
         }
-
-        // now save the files
+        /**
+         * 保存文件
+         */
         if (writeFiles) {
             callback.saveStarted(generatedXmlFiles.size()
                     + generatedJavaFiles.size());
@@ -308,7 +307,7 @@ public class MyBatisGenerator {
                             MergeConstants.OLD_ELEMENT_TAGS,
                             gjf.getFileEncoding());
                 } else if (shellCallback.isOverwriteEnabled()) {
-                    source = gjf.getFormattedContent();
+                    source = gjf.getFormattedContent(); // 真正的构建java代码
                     warnings.add(getString("Warning.11", //$NON-NLS-1$
                             targetFile.getAbsolutePath()));
                 } else {

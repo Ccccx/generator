@@ -28,21 +28,6 @@
  */
 package org.mybatis.generator.config.xml;
 
-import static org.mybatis.generator.internal.util.messages.Messages.getString;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.mybatis.generator.codegen.XmlConstants;
 import org.mybatis.generator.config.Configuration;
 import org.mybatis.generator.exception.XMLParserException;
@@ -53,6 +38,16 @@ import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import static org.mybatis.generator.internal.util.messages.Messages.getString;
 
 public class ConfigurationParser {
 
@@ -83,17 +78,26 @@ public class ConfigurationParser {
      * @param extraProperties an (optional) set of properties used to resolve property
      *     references in the configuration file
      * @param warnings any warnings are added to this array
+     *  初始化配置解析器中的一些基本数据内容
      */
     public ConfigurationParser(Properties extraProperties, List<String> warnings) {
         super();
+        /**
+         *  properties：存放的系统配置信息
+         */
         this.extraProperties = extraProperties;
 
         if (warnings == null) {
+            /**
+             * warnings：存放的解析中的警告信息
+             */
             this.warnings = new ArrayList<String>();
         } else {
             this.warnings = warnings;
         }
-
+        /**
+         * parseErrors ：存放的解析中的错误信息
+         */
         parseErrors = new ArrayList<String>();
     }
 
@@ -121,6 +125,14 @@ public class ConfigurationParser {
         return parseConfiguration(is);
     }
 
+    /**
+     *
+     * @param inputSource
+     * @return
+     * @throws IOException
+     * @throws XMLParserException
+     * 执行配置解析，创建对象
+     */
     private Configuration parseConfiguration(InputSource inputSource)
             throws IOException, XMLParserException {
         parseErrors.clear();
@@ -129,12 +141,13 @@ public class ConfigurationParser {
 
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
+            //设置实体对象处理器（对于MyBatis3来说，就是处理org/mybatis/generator/config/xml/mybatis-generator-config_1_0.dtd验证），
             builder.setEntityResolver(new ParserEntityResolver());
-
+            //设置解析错误处理器，把解析过程中的异常和警告保存到warnings和parseErrors两个String列表中；
             ParserErrorHandler handler = new ParserErrorHandler(warnings,
                     parseErrors);
             builder.setErrorHandler(handler);
-
+            //得到配置文件对应的DOM对象；
             Document document = null;
             try {
                 document = builder.parse(inputSource);
@@ -152,16 +165,20 @@ public class ConfigurationParser {
                 throw new XMLParserException(parseErrors);
             }
 
+            //配置对象
             Configuration config;
             Element rootNode = document.getDocumentElement();
+            //得到XML文件的xml描述符；
             DocumentType docType = document.getDoctype();
             if (rootNode.getNodeType() == Node.ELEMENT_NODE
                     && docType.getPublicId().equals(
                             XmlConstants.IBATOR_CONFIG_PUBLIC_ID)) {
+                //如果xml的PUBLIC_ID为-//Apache Software Foundation//DTD Apache iBATIS Ibator Configuration 1.0//EN，则执行解析ibatis过程；
                 config = parseIbatorConfiguration(rootNode);
             } else if (rootNode.getNodeType() == Node.ELEMENT_NODE
                     && docType.getPublicId().equals(
                             XmlConstants.MYBATIS_GENERATOR_CONFIG_PUBLIC_ID)) {
+                //如果xml的PUBLIC_ID为-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN，则执行解析mybatis过程；
                 config = parseMyBatisGeneratorConfiguration(rootNode);
             } else {
                 throw new XMLParserException(getString("RuntimeError.5")); //$NON-NLS-1$
@@ -170,7 +187,7 @@ public class ConfigurationParser {
             if (parseErrors.size() > 0) {
                 throw new XMLParserException(parseErrors);
             }
-
+            //返回解析出的Configuration对象
             return config;
         } catch (ParserConfigurationException e) {
             parseErrors.add(e.getMessage());
@@ -185,10 +202,19 @@ public class ConfigurationParser {
         return parser.parseIbatorConfiguration(rootNode);
     }
 
+    /**
+     *
+     * @param rootNode
+     * @return
+     * @throws XMLParserException
+     * 执行MyBatis生成器的配置
+     */
     private Configuration parseMyBatisGeneratorConfiguration(Element rootNode)
             throws XMLParserException {
+        //创建一个MyBatisGeneratorConfigurationParser
         MyBatisGeneratorConfigurationParser parser = new MyBatisGeneratorConfigurationParser(
                 extraProperties);
+        //使用配置解析器执行XML解析
         return parser.parseConfiguration(rootNode);
     }
 }

@@ -15,19 +15,6 @@
  */
 package org.mybatis.generator.api;
 
-import static org.mybatis.generator.internal.util.messages.Messages.getString;
-
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
-
 import org.mybatis.generator.config.Configuration;
 import org.mybatis.generator.config.xml.ConfigurationParser;
 import org.mybatis.generator.exception.InvalidConfigurationException;
@@ -35,10 +22,18 @@ import org.mybatis.generator.exception.XMLParserException;
 import org.mybatis.generator.internal.DefaultShellCallback;
 import org.mybatis.generator.logging.LogFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.*;
+
+import static org.mybatis.generator.internal.util.messages.Messages.getString;
+
 /**
  * This class allows the code generator to be run from the command line.
  * 
  * @author Jeff Butler
+ * 命令行运行主要入口
  */
 public class ShellRunner {
     private static final String CONFIG_FILE = "-configfile"; //$NON-NLS-1$
@@ -103,22 +98,47 @@ public class ShellRunner {
         }
 
         try {
+            /**
+             * 初始化配置解析器
+             */
             ConfigurationParser cp = new ConfigurationParser(warnings);
+            /**
+             * 调用配置解析器创建配置对象（Configuration对象非常简单，可以简单理解为包含两个列表，一个列表是List<Context> contexts，
+             * 包含了解析出来的Context对象，一个是List<String> classPathEntries，包含了配置的classPathEntry的location值）
+             *
+             */
             Configuration config = cp.parseConfiguration(configurationFile);
-
+            /**
+             * 创建一个默认的ShellCallback对象，之前说过，
+             * shellcallback接口主要用来处理文件的创建和合并，传入overwrite参数；默认的shellcallback是不支持文件合并的；
+             */
             DefaultShellCallback shellCallback = new DefaultShellCallback(
                     arguments.containsKey(OVERWRITE));
-
+            /**
+             * 创建一个MyBatisGenerator对象。MyBatisGenerator类是真正用来执行生成动作的类
+             */
             MyBatisGenerator myBatisGenerator = new MyBatisGenerator(config, shellCallback, warnings);
-
-            ProgressCallback progressCallback = arguments.containsKey(VERBOSE) ? new VerboseProgressCallback()
-                    : null;
-
+            /**
+             * //创建一个默认的ProgressCallback对象，之前说过，在MBG执行过程中在一定的执行步骤结束后调用ProgressCallback对象的方法，
+             * 达到执行过程监控的效果； //如果在执行ShellRunner是传入了-verbose参数，
+             * 那么创建一个VerboseProgressCallback（VerboseProgressCallback只是调用了System.out打印出了执行过程而已）
+             *
+             */
+            ProgressCallback progressCallback = new VerboseProgressCallback()/*arguments.containsKey(VERBOSE) ? new VerboseProgressCallback()
+                    : null*/;
+            /**
+             *  执行真正的MBG创建过程
+             *  注意，这里的contexts是通过-contextids传入的需要的上下文id列表；
+             *  fullyqualifiedTables是通过-tables传入的本次需要生成的table名称列表；
+             */
             myBatisGenerator.generate(progressCallback, contexts, fullyqualifiedTables);
 
         } catch (XMLParserException e) {
             writeLine(getString("Progress.3")); //$NON-NLS-1$
             writeLine();
+            /**
+             * 输出警告信息
+             */
             for (String error : e.getErrors()) {
                 writeLine(error);
             }

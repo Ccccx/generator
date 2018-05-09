@@ -15,43 +15,29 @@
  */
 package org.mybatis.generator.internal.db;
 
-import static org.mybatis.generator.internal.util.JavaBeansUtil.getCamelCaseString;
-import static org.mybatis.generator.internal.util.JavaBeansUtil.getValidPropertyName;
-import static org.mybatis.generator.internal.util.StringUtility.composeFullyQualifiedTableName;
-import static org.mybatis.generator.internal.util.StringUtility.isTrue;
-import static org.mybatis.generator.internal.util.StringUtility.stringContainsSQLWildcard;
-import static org.mybatis.generator.internal.util.StringUtility.stringContainsSpace;
-import static org.mybatis.generator.internal.util.StringUtility.stringHasValue;
-import static org.mybatis.generator.internal.util.messages.Messages.getString;
-
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.mybatis.generator.api.FullyQualifiedTable;
 import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.JavaTypeResolver;
 import org.mybatis.generator.api.dom.java.FullyQualifiedJavaType;
 import org.mybatis.generator.api.dom.java.JavaReservedWords;
-import org.mybatis.generator.config.ColumnOverride;
-import org.mybatis.generator.config.Context;
-import org.mybatis.generator.config.GeneratedKey;
-import org.mybatis.generator.config.PropertyRegistry;
-import org.mybatis.generator.config.TableConfiguration;
+import org.mybatis.generator.config.*;
 import org.mybatis.generator.internal.ObjectFactory;
 import org.mybatis.generator.logging.Log;
 import org.mybatis.generator.logging.LogFactory;
+
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.mybatis.generator.internal.util.JavaBeansUtil.getCamelCaseString;
+import static org.mybatis.generator.internal.util.JavaBeansUtil.getValidPropertyName;
+import static org.mybatis.generator.internal.util.StringUtility.*;
+import static org.mybatis.generator.internal.util.messages.Messages.getString;
 
 /**
  * @author Jeff Butler
@@ -183,7 +169,9 @@ public class DatabaseIntrospector {
                     tc.getSchema(), tc.getTableName()));
             return null;
         }
-
+        /**
+         * 组装字段及其类型
+         */
         removeIgnoredColumns(tc, columns);
         calculateExtraColumnInformation(tc, columns);
         applyColumnOverrides(tc, columns);
@@ -499,12 +487,15 @@ public class DatabaseIntrospector {
         Map<ActualTableName, List<IntrospectedColumn>> answer =
                 new HashMap<ActualTableName, List<IntrospectedColumn>>();
 
+
         if (logger.isDebugEnabled()) {
             String fullTableName = composeFullyQualifiedTableName(localCatalog, localSchema,
                             localTableName, '.');
             logger.debug(getString("Tracing.1", fullTableName)); //$NON-NLS-1$
         }
-
+        /**
+        * 获取表字段
+        */
         ResultSet rs = databaseMetaData.getColumns(localCatalog, localSchema,
                 localTableName, "%"); //$NON-NLS-1$
 
@@ -512,6 +503,9 @@ public class DatabaseIntrospector {
         boolean supportsIsGeneratedColumn = false;
         ResultSetMetaData rsmd = rs.getMetaData();
         int colCount = rsmd.getColumnCount();
+        /**
+         * 判断主键类型
+         */
         for (int i = 1; i <= colCount; i++) {
             if ("IS_AUTOINCREMENT".equals(rsmd.getColumnName(i))) { //$NON-NLS-1$
                 supportsIsAutoIncrement = true;
@@ -532,7 +526,7 @@ public class DatabaseIntrospector {
             introspectedColumn
                     .setNullable(rs.getInt("NULLABLE") == DatabaseMetaData.columnNullable); //$NON-NLS-1$
             introspectedColumn.setScale(rs.getInt("DECIMAL_DIGITS")); //$NON-NLS-1$
-            introspectedColumn.setRemarks(rs.getString("REMARKS")); //$NON-NLS-1$
+            introspectedColumn.setRemarks(rs.getString("REMARKS")); //$NON-NLS-1$  // 备注
             introspectedColumn.setDefaultValue(rs.getString("COLUMN_DEF")); //$NON-NLS-1$
 
             if (supportsIsAutoIncrement) {

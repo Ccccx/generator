@@ -46,6 +46,8 @@ public class IntrospectedTableMyBatis3Impl extends IntrospectedTable {
     
     protected List<AbstractJavaGenerator> javaModelGenerators;
 
+    protected List<AbstractJavaGenerator> javaExampleGenerators;
+
     protected List<AbstractJavaGenerator> clientGenerators;
 
     protected AbstractXmlGenerator xmlMapperGenerator;
@@ -54,6 +56,7 @@ public class IntrospectedTableMyBatis3Impl extends IntrospectedTable {
         super(TargetRuntime.MYBATIS3);
         javaModelGenerators = new ArrayList<AbstractJavaGenerator>();
         clientGenerators = new ArrayList<AbstractJavaGenerator>();
+        javaExampleGenerators = new ArrayList<AbstractJavaGenerator>();
     }
 
     @Override
@@ -87,7 +90,7 @@ public class IntrospectedTableMyBatis3Impl extends IntrospectedTable {
         if (!rules.generateJavaClient()) {
             return null;
         }
-        
+        //javaGenerator = new JavaMapperGenerator();   返回 new XMLMapperGenerator();
         AbstractJavaClientGenerator javaGenerator = createJavaClientGenerator();
         if (javaGenerator == null) {
             return null;
@@ -130,7 +133,7 @@ public class IntrospectedTableMyBatis3Impl extends IntrospectedTable {
             AbstractJavaGenerator javaGenerator = new ExampleGenerator();
             initializeAbstractGenerator(javaGenerator, warnings,
                     progressCallback);
-            javaModelGenerators.add(javaGenerator);
+            javaExampleGenerators.add(javaGenerator);
         }
 
         if (getRules().generatePrimaryKeyClass()) {
@@ -181,6 +184,19 @@ public class IntrospectedTableMyBatis3Impl extends IntrospectedTable {
                                 .getTargetProject(),
                                 context.getProperty(PropertyRegistry.CONTEXT_JAVA_FILE_ENCODING),
                                 context.getJavaFormatter());
+                answer.add(gjf);
+            }
+        }
+
+        for (AbstractJavaGenerator javaGenerator : javaExampleGenerators) {
+            List<CompilationUnit> compilationUnits = javaGenerator
+                    .getCompilationUnits();
+            for (CompilationUnit compilationUnit : compilationUnits) {
+                GeneratedJavaFile gjf = new GeneratedJavaFile(compilationUnit,
+                        context.getJavaExampleGeneratorConfiguration()
+                                .getTargetProject(),
+                        context.getProperty(PropertyRegistry.CONTEXT_JAVA_FILE_ENCODING),
+                        context.getJavaFormatter());
                 answer.add(gjf);
             }
         }

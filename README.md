@@ -11,4 +11,6 @@ MyBatis Generator (MBG)
 
 Code generator for MyBatis and iBATIS.
 
-It will generate code for all versions of MyBatis, and versions of iBATIS after version 2.2.0. It will introspect a database table (or many tables) and will generate artifacts that can be used to access the table(s). This lessens the initial nuisance of setting up objects and configuration files to interact with database tables. MBG seeks to make a major impact on the large percentage of database operations that are simple CRUD (Create, Retrieve, Update, Delete).
+它将为所有版本的MyBatis生成代码，以及版本2.2.0之后的iBATIS版本。它将内省一个数据库表(或多个表)，并生成可用于访问表的构件。这减少了设置对象和配置文件与数据库表交互的最初麻烦。MBG试图对简单CRUD(创建、检索、更新、删除)的大量数据库操作产生重大影响。
+
+基于官方源码更改，仅供测试也学习使用。

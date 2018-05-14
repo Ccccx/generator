@@ -110,6 +110,10 @@ public class Context extends PropertyHolder {
         return javaModelGeneratorConfiguration;
     }
 
+    public JavaExampleGeneratorConfiguration getJavaExampleGeneratorConfiguration() {
+        return javaExampleGeneratorConfiguration;
+    }
+
     public JavaTypeResolverConfiguration getJavaTypeResolverConfiguration() {
         return javaTypeResolverConfiguration;
     }
@@ -208,7 +212,10 @@ public class Context extends PropertyHolder {
             JavaModelGeneratorConfiguration javaModelGeneratorConfiguration) {
         this.javaModelGeneratorConfiguration = javaModelGeneratorConfiguration;
     }
-
+    public void setJavaModelGeneratorConfiguration(
+            JavaExampleGeneratorConfiguration javaExampleGeneratorConfiguration) {
+        this.javaExampleGeneratorConfiguration = javaExampleGeneratorConfiguration;
+    }
     public void setJavaTypeResolverConfiguration(
             JavaTypeResolverConfiguration javaTypeResolverConfiguration) {
         this.javaTypeResolverConfiguration = javaTypeResolverConfiguration;
@@ -510,9 +517,9 @@ public class Context extends PropertyHolder {
         if (introspectedTables != null) {
             for (IntrospectedTable introspectedTable : introspectedTables) {
                 callback.checkCancel();
-                // 初始化生成规则
+                // 初始化生成规则、包和表名
                 introspectedTable.initialize();
-                introspectedTable.calculateGenerators(warnings, callback);
+                introspectedTable.calculateGenerators(warnings, callback); // 添加解析器参数
                 generatedJavaFiles.addAll(introspectedTable
                         .getGeneratedJavaFiles()); // 生成Java类 *Example
                 generatedXmlFiles.addAll(introspectedTable

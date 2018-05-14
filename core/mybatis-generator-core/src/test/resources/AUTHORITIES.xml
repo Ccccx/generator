@@ -28,7 +28,7 @@
     <plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
     <plugin type="org.mybatis.generator.plugins.EqualsHashCodePlugin" />
     <plugin type="org.mybatis.generator.plugins.ToStringPlugin" />
-    <!--plugin type="org.mybatis.generator.plugins.PaginationPlugin" />-->
+    <plugin type="org.mybatis.generator.plugins.PaginationPlugin" />
 
     <commentGenerator>
 		<property name="suppressDate" value="true" />
@@ -50,6 +50,10 @@
       <property name="enableSubPackages" value="true" />
      <!-- <property name="trimStrings" value="true" />-->
     </javaModelGenerator>
+    <!-- 新加入标签，将生成的 Example文件放到指定包下，官方是和 javaModelGenerator 在一个包下，不支持单独配置-->
+    <javaExampleGenerator targetPackage="exampleModel" targetProject="D:\IDEA\generator\core\mybatis-generator-core\src\test\resources\test">
+      <property name="enableSubPackages" value="true" />
+    </javaExampleGenerator>
 
     <sqlMapGenerator targetPackage="mapping"  targetProject="D:\IDEA\generator\core\mybatis-generator-core\src\test\resources\test">
       <property name="enableSubPackages" value="true" />

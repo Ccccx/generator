@@ -1,7 +1,7 @@
 package dao;
 
 import dto.DrivingInfo;
-import dto.DrivingInfoExample;
+import exampleModel.DrivingInfoExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 

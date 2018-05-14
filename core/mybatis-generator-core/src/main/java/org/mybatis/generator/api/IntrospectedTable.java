@@ -489,7 +489,8 @@ public abstract class IntrospectedTable {
 
     public void initialize() {
         calculateJavaClientAttributes(); // mapper
-        calculateModelAttributes();// dto example
+        calculateModelAttributes();// 原本是 (dto) example在一起，现在将他们拆分 这里只会得到model
+        calculateExampleAttributes(); // 这里加入新的model
         calculateXmlAttributes(); // xml
 
         if (tableConfiguration.getModelType() == ModelType.HIERARCHICAL) {
@@ -499,7 +500,7 @@ public abstract class IntrospectedTable {
         } else {
             rules = new ConditionalModelRules(this);
         }
-
+        // 插件全部初始化
         context.getPlugins().initialized(this);
     }
 
@@ -859,6 +860,16 @@ public abstract class IntrospectedTable {
         return sb.toString();
     }
 
+    protected String calculateJavaExamplePackage() {
+        JavaExampleGeneratorConfiguration config = context
+                .getJavaExampleGeneratorConfiguration();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(config.getTargetPackage());
+        sb.append(fullyQualifiedTable.getSubPackageForModel(isSubPackagesEnabled(config)));
+
+        return sb.toString();
+    }
     protected void calculateModelAttributes() {
         String pakkage = calculateJavaModelPackage();
 
@@ -881,6 +892,19 @@ public abstract class IntrospectedTable {
         sb.append(fullyQualifiedTable.getDomainObjectName());
         sb.append("WithBLOBs"); //$NON-NLS-1$
         setRecordWithBLOBsType(sb.toString());
+
+        sb.setLength(0);
+        sb.append(pakkage);
+        sb.append('.');
+        sb.append(fullyQualifiedTable.getDomainObjectName());
+        sb.append("Example"); //$NON-NLS-1$
+        setExampleType(sb.toString());
+    }
+
+    protected void calculateExampleAttributes() {
+        String pakkage = calculateJavaExamplePackage();
+
+        StringBuilder sb = new StringBuilder();
 
         sb.setLength(0);
         sb.append(pakkage);

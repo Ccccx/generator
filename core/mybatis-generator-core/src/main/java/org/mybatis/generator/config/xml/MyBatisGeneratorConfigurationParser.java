@@ -64,6 +64,12 @@ public class MyBatisGeneratorConfigurationParser {
         configurationProperties = new Properties();
     }
 
+    /**
+     * 获取基本元素信息
+     * @param rootNode
+     * @return
+     * @throws XMLParserException
+     */
     public Configuration parseConfiguration(Element rootNode)
             throws XMLParserException {
         //创建一个新的配置对象
@@ -201,6 +207,8 @@ public class MyBatisGeneratorConfigurationParser {
                 parseConnectionFactory(context, childNode);
             } else if ("javaModelGenerator".equals(childNode.getNodeName())) { //$NON-NLS-1$
                 parseJavaModelGenerator(context, childNode);
+            } else if ("javaExampleGenerator".equals(childNode.getNodeName())) { //$NON-NLS-1$
+                parseJavaExampleGenerator(context, childNode);
             } else if ("javaTypeResolver".equals(childNode.getNodeName())) { //$NON-NLS-1$
                 parseJavaTypeResolver(context, childNode);
             } else if ("sqlMapGenerator".equals(childNode.getNodeName())) { //$NON-NLS-1$
@@ -617,6 +625,31 @@ public class MyBatisGeneratorConfigurationParser {
 
             if ("property".equals(childNode.getNodeName())) { //$NON-NLS-1$
                 parseProperty(javaModelGeneratorConfiguration, childNode);
+            }
+        }
+    }
+
+    protected void parseJavaExampleGenerator(Context context, Node node) {
+        JavaExampleGeneratorConfiguration javaExampleGeneratorConfiguration = new JavaExampleGeneratorConfiguration();
+        context.setJavaModelGeneratorConfiguration(javaExampleGeneratorConfiguration);
+
+        Properties attributes = parseAttributes(node);
+        String targetPackage = attributes.getProperty("targetPackage"); //$NON-NLS-1$
+        String targetProject = attributes.getProperty("targetProject"); //$NON-NLS-1$
+
+        javaExampleGeneratorConfiguration.setTargetPackage(targetPackage);
+        javaExampleGeneratorConfiguration.setTargetProject(targetProject);
+
+        NodeList nodeList = node.getChildNodes();
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node childNode = nodeList.item(i);
+
+            if (childNode.getNodeType() != Node.ELEMENT_NODE) {
+                continue;
+            }
+
+            if ("property".equals(childNode.getNodeName())) { //$NON-NLS-1$
+                parseProperty(javaExampleGeneratorConfiguration, childNode);
             }
         }
     }

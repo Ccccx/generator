@@ -1,5 +1,5 @@
 /**
- *    Copyright 2006-2018 the original author or authors.
+ *    Copyright 2006-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ public abstract class IntrospectedTable {
         ATTR_BASE_RECORD_TYPE,
         ATTR_RECORD_WITH_BLOBS_TYPE,
         ATTR_EXAMPLE_TYPE,
+        ATTR_PO_SERVICE_TYPE,
         ATTR_IBATIS2_SQL_MAP_PACKAGE,
         ATTR_IBATIS2_SQL_MAP_FILE_NAME,
         ATTR_IBATIS2_SQL_MAP_NAMESPACE,
@@ -144,6 +145,10 @@ public abstract class IntrospectedTable {
 
     public GeneratedKey getGeneratedKey() {
         return tableConfiguration.getGeneratedKey();
+    }
+
+    public GeneratedMethod getGeneratedMethod() {
+        return tableConfiguration.getGeneratedMethod();
     }
 
     public IntrospectedColumn getColumn(String columnName) {
@@ -357,6 +362,10 @@ public abstract class IntrospectedTable {
         return internalAttributes.get(InternalAttribute.ATTR_EXAMPLE_TYPE);
     }
 
+    public String getPoService() {
+        return internalAttributes.get(InternalAttribute.ATTR_PO_SERVICE_TYPE);
+    }
+
     /**
      * Gets the record with blo bs type.
      *
@@ -491,6 +500,7 @@ public abstract class IntrospectedTable {
         calculateJavaClientAttributes(); // mapper
         calculateModelAttributes();// 原本是 (dto) example在一起，现在将他们拆分 这里只会得到model
         calculateExampleAttributes(); // 这里加入新的model
+        calculatePoServiceAttributes();
         calculateXmlAttributes(); // xml
 
         if (tableConfiguration.getModelType() == ModelType.HIERARCHICAL) {
@@ -870,6 +880,18 @@ public abstract class IntrospectedTable {
 
         return sb.toString();
     }
+
+    protected String calculateJavaPoServicePackage() {
+        JavaPoServiceGeneratorConfiguration config = context
+                .getJavaPoServiceGeneratorConfiguration();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(config.getTargetPackage());
+        sb.append(fullyQualifiedTable.getSubPackageForModel(isSubPackagesEnabled(config)));
+
+        return sb.toString();
+    }
+
     protected void calculateModelAttributes() {
         String pakkage = calculateJavaModelPackage();
 
@@ -912,6 +934,19 @@ public abstract class IntrospectedTable {
         sb.append(fullyQualifiedTable.getDomainObjectName());
         sb.append("Example"); //$NON-NLS-1$
         setExampleType(sb.toString());
+    }
+
+    protected void calculatePoServiceAttributes() {
+        String pakkage = calculateJavaPoServicePackage();
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.setLength(0);
+        sb.append(pakkage);
+        sb.append('.');
+        sb.append(fullyQualifiedTable.getDomainObjectName());
+        sb.append("PoService"); //$NON-NLS-1$
+        setPoService(sb.toString());
     }
 
     protected String calculateSqlMapPackage() {
@@ -1087,6 +1122,11 @@ public abstract class IntrospectedTable {
     public void setExampleType(String exampleType) {
         internalAttributes
                 .put(InternalAttribute.ATTR_EXAMPLE_TYPE, exampleType);
+    }
+
+    public void setPoService(String poService) {
+        internalAttributes
+                .put(InternalAttribute.ATTR_PO_SERVICE_TYPE, poService);
     }
 
     public void setIbatis2SqlMapPackage(String sqlMapPackage) {

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+	<!-- classPathEntry location="${mybatis.jdbc.classpath}" / -->
+
+	<context id="demo" targetRuntime="MyBatis3">
+		<plugin
+			type="org.mybatis.generator.plugins.EqualsHashCodePlugin"></plugin>
+		<plugin type="org.mybatis.generator.plugins.SerializablePlugin"></plugin>
+		<plugin type="org.mybatis.generator.plugins.ToStringPlugin"></plugin>
+
+		<jdbcConnection driverClass="${mybatis.jdbc.driver}"
+			connectionURL="${mybatis.jdbc.url}" userId="${mybatis.jdbc.username}"
+			password="${mybatis.jdbc.password}" />
+
+		<javaModelGenerator
+			targetPackage="org.dreamwork.common.msg.msgservice.dao.model"
+			targetProject="E:\IDEA\msg-dal\src\main\java" />
+
+		<!--example 生成的位置-->
+		<javaExampleGenerator
+				targetPackage="org.dreamwork.common.msg.msgservice.dao.example"
+				targetProject="E:\IDEA\msg-dal\src\main\java" >
+			<property name="enableSubPackages" value="true" />
+		</javaExampleGenerator>
+		<!--po 生成的位置-->
+		<javaPoServiceGenerator
+				targetPackage="org.dreamwork.common.msg.msgservice.dao.po"
+				targetProject="E:\IDEA\msg-dal\src\main\java" >
+			<property name="enableSubPackages" value="true" />
+		</javaPoServiceGenerator>
+
+		<!--mapping文件位置-->
+		<sqlMapGenerator targetPackage="mapping"  targetProject="E:\IDEA\generator\core\mybatis-generator-core\src\test\java">
+			<property name="enableSubPackages" value="true" />
+		</sqlMapGenerator>
+		<!--XML位置-->
+		<javaClientGenerator type="XMLMAPPER" targetPackage="dao" targetProject="E:\IDEA\generator\core\mybatis-generator-core\src\test\java">
+			<property name="enableSubPackages" value="true" />
+		</javaClientGenerator>
+
+
+		<table schema="notice" tableName="sms_message_log"
+			   domainObjectName="SmsMessageLogTest" >
+			<generatedKey column="id" sqlStatement="MySql" identity="true" />
+			<generatedMethods>
+				<generatedMethod methodName="payOrder"
+								 columns="mobile_phone,channel_code,utm_source"
+								 enableSelectByExample="true"
+								 enableUpdateByExample="true"
+								 enablePostPositionQuery="true"
+				/>
+
+				<generatedMethod methodName="payChannel"
+								 columns="operator,send_result"
+								 enableSelectByExample="true"
+				/>
+			</generatedMethods>
+		</table>
+	</context>
+</generatorConfiguration>

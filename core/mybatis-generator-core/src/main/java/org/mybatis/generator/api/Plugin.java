@@ -1,5 +1,5 @@
 /**
- *    Copyright 2006-2018 the original author or authors.
+ *    Copyright 2006-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,9 +15,6 @@
  */
 package org.mybatis.generator.api;
 
-import java.util.List;
-import java.util.Properties;
-
 import org.mybatis.generator.api.dom.java.Field;
 import org.mybatis.generator.api.dom.java.Interface;
 import org.mybatis.generator.api.dom.java.Method;
@@ -25,6 +22,9 @@ import org.mybatis.generator.api.dom.java.TopLevelClass;
 import org.mybatis.generator.api.dom.xml.Document;
 import org.mybatis.generator.api.dom.xml.XmlElement;
 import org.mybatis.generator.config.Context;
+
+import java.util.List;
+import java.util.Properties;
 
 /**
  * This interface defines methods that will be called at different times during
@@ -926,7 +926,8 @@ public interface Plugin {
      */
     boolean clientSelectAllMethodGenerated(Method method,
             TopLevelClass topLevelClass, IntrospectedTable introspectedTable);
-    
+
+
     /**
      * This method is called after the field is generated for a specific column
      * in a table.
@@ -1094,6 +1095,9 @@ public interface Plugin {
      */
     boolean modelExampleClassGenerated(TopLevelClass topLevelClass,
             IntrospectedTable introspectedTable);
+
+    public boolean modelPoServiceGenerated(TopLevelClass topLevelClass,
+                                           IntrospectedTable introspectedTable);
 
     /**
      * This method is called when the SqlMap file has been generated.

@@ -1,5 +1,5 @@
 /**
- *    Copyright 2006-2017 the original author or authors.
+ *    Copyright 2006-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -28,10 +28,7 @@ import org.mybatis.generator.codegen.AbstractXmlGenerator;
 import org.mybatis.generator.codegen.mybatis3.javamapper.AnnotatedClientGenerator;
 import org.mybatis.generator.codegen.mybatis3.javamapper.JavaMapperGenerator;
 import org.mybatis.generator.codegen.mybatis3.javamapper.MixedClientGenerator;
-import org.mybatis.generator.codegen.mybatis3.model.BaseRecordGenerator;
-import org.mybatis.generator.codegen.mybatis3.model.ExampleGenerator;
-import org.mybatis.generator.codegen.mybatis3.model.PrimaryKeyGenerator;
-import org.mybatis.generator.codegen.mybatis3.model.RecordWithBLOBsGenerator;
+import org.mybatis.generator.codegen.mybatis3.model.*;
 import org.mybatis.generator.codegen.mybatis3.xmlmapper.XMLMapperGenerator;
 import org.mybatis.generator.config.PropertyRegistry;
 import org.mybatis.generator.internal.ObjectFactory;
@@ -50,6 +47,8 @@ public class IntrospectedTableMyBatis3Impl extends IntrospectedTable {
 
     protected List<AbstractJavaGenerator> clientGenerators;
 
+    protected List<AbstractJavaGenerator> javaPoServiceGenerators;
+
     protected AbstractXmlGenerator xmlMapperGenerator;
 
     public IntrospectedTableMyBatis3Impl() {
@@ -57,13 +56,14 @@ public class IntrospectedTableMyBatis3Impl extends IntrospectedTable {
         javaModelGenerators = new ArrayList<AbstractJavaGenerator>();
         clientGenerators = new ArrayList<AbstractJavaGenerator>();
         javaExampleGenerators = new ArrayList<AbstractJavaGenerator>();
+        javaPoServiceGenerators = new ArrayList<AbstractJavaGenerator>();
     }
 
     @Override
     public void calculateGenerators(List<String> warnings,
             ProgressCallback progressCallback) {
         calculateJavaModelGenerators(warnings, progressCallback);
-        // 构建 model 和 example 构造器
+        // 构建 model、example、poService构造器。
         AbstractJavaClientGenerator javaClientGenerator =
                 calculateClientGenerators(warnings, progressCallback);
         // 构建 xml 构造器
@@ -150,6 +150,14 @@ public class IntrospectedTableMyBatis3Impl extends IntrospectedTable {
             javaModelGenerators.add(javaGenerator);
         }
 
+        // 生成PoService
+        if (getRules().generatePoServiceClass()) {
+            AbstractJavaGenerator javaGenerator = new PoServiceGenerator();
+            initializeAbstractGenerator(javaGenerator, warnings,
+                    progressCallback);
+            javaPoServiceGenerators.add(javaGenerator);
+        }
+
         if (getRules().generateRecordWithBLOBsClass()) {
             AbstractJavaGenerator javaGenerator = new RecordWithBLOBsGenerator();
             initializeAbstractGenerator(javaGenerator, warnings,
@@ -194,6 +202,19 @@ public class IntrospectedTableMyBatis3Impl extends IntrospectedTable {
             for (CompilationUnit compilationUnit : compilationUnits) {
                 GeneratedJavaFile gjf = new GeneratedJavaFile(compilationUnit,
                         context.getJavaExampleGeneratorConfiguration()
+                                .getTargetProject(),
+                        context.getProperty(PropertyRegistry.CONTEXT_JAVA_FILE_ENCODING),
+                        context.getJavaFormatter());
+                answer.add(gjf);
+            }
+        }
+
+        for (AbstractJavaGenerator javaGenerator : javaPoServiceGenerators) {
+            List<CompilationUnit> compilationUnits = javaGenerator
+                    .getCompilationUnits();
+            for (CompilationUnit compilationUnit : compilationUnits) {
+                GeneratedJavaFile gjf = new GeneratedJavaFile(compilationUnit,
+                        context.getJavaPoServiceGeneratorConfiguration()
                                 .getTargetProject(),
                         context.getProperty(PropertyRegistry.CONTEXT_JAVA_FILE_ENCODING),
                         context.getJavaFormatter());

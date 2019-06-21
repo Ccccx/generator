@@ -1,5 +1,5 @@
 /**
- *    Copyright 2006-2017 the original author or authors.
+ *    Copyright 2006-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@
 package org.mybatis.generator.config.xml;
 
 import org.mybatis.generator.config.*;
+import org.mybatis.generator.config.GeneratedMethod.GeneratedMethodBean;
 import org.mybatis.generator.exception.XMLParserException;
 import org.mybatis.generator.internal.ObjectFactory;
 import org.w3c.dom.Element;
@@ -39,7 +40,7 @@ import org.w3c.dom.NodeList;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Properties;
+import java.util.*;
 
 import static org.mybatis.generator.internal.util.StringUtility.isTrue;
 import static org.mybatis.generator.internal.util.StringUtility.stringHasValue;
@@ -209,6 +210,8 @@ public class MyBatisGeneratorConfigurationParser {
                 parseJavaModelGenerator(context, childNode);
             } else if ("javaExampleGenerator".equals(childNode.getNodeName())) { //$NON-NLS-1$
                 parseJavaExampleGenerator(context, childNode);
+            }  else if ("javaPoServiceGenerator".equals(childNode.getNodeName())) { //$NON-NLS-1$
+                parseJavaPoServiceGenerator(context, childNode);
             } else if ("javaTypeResolver".equals(childNode.getNodeName())) { //$NON-NLS-1$
                 parseJavaTypeResolver(context, childNode);
             } else if ("sqlMapGenerator".equals(childNode.getNodeName())) { //$NON-NLS-1$
@@ -397,9 +400,13 @@ public class MyBatisGeneratorConfigurationParser {
                 parseDomainObjectRenamingRule(tc, childNode);
             } else if ("columnRenamingRule".equals(childNode.getNodeName())) { //$NON-NLS-1$
                 parseColumnRenamingRule(tc, childNode);
+            } else if ("generatedMethods".equals(childNode.getNodeName())) {
+                parseGeneratedMethods(tc, childNode);
             }
         }
     }
+
+
 
     private void parseColumnOverride(TableConfiguration tc, Node node) {
         Properties attributes = parseAttributes(node);
@@ -552,6 +559,75 @@ public class MyBatisGeneratorConfigurationParser {
         tc.setColumnRenamingRule(crr);
     }
 
+    private void parseGeneratedMethods(TableConfiguration tc, Node node) {
+        NodeList childNodes = node.getChildNodes();
+        GeneratedMethod generatedMethod = new GeneratedMethod();
+
+        Properties attributes = parseAttributes(node);
+
+        boolean enableSelectByExample = isTrue(attributes
+                .getProperty("enableSelectByExample"));
+        boolean enableUpdateByExample = isTrue(attributes
+                .getProperty("enableUpdateByExample"));
+        boolean enablePostPositionQuery = isTrue(attributes
+                .getProperty("enablePostPositionQuery"));
+
+        generatedMethod.setEnableSelectByExample(enableSelectByExample);
+        generatedMethod.setEnableUpdateByExample(enableUpdateByExample);
+        generatedMethod.setEnablePostPositionQuery(enablePostPositionQuery);
+
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node childNode = childNodes.item(i);
+            if (childNode.getNodeType() != Node.ELEMENT_NODE) {
+                continue;
+            }
+
+            if ("generatedMethod".equals(childNode.getNodeName())) {
+                parseGeneratedMethodBean(tc, childNode, generatedMethod);
+            }
+
+        }
+
+        tc.setGeneratedMethod(generatedMethod);
+
+    }
+
+    private void parseGeneratedMethodBean(TableConfiguration tc, Node node, GeneratedMethod generatedMethod) {
+        Properties attributes = parseAttributes(node);
+
+        String columns = attributes.getProperty("columns");
+        if (columns == null) {
+            return;
+        }
+
+        List<String> list = new ArrayList<String>();
+        if (columns.contains(",")) {
+            String[] column = columns.split(",");
+            list.addAll(Arrays.asList(column));
+        } else {
+            list.add(columns);
+        }
+
+        String methodName = attributes.getProperty("methodName");
+        boolean enableSelectByExample = isTrue(attributes
+                .getProperty("enableSelectByExample"));
+        boolean enableUpdateByExample = isTrue(attributes
+                .getProperty("enableUpdateByExample"));
+        boolean enablePostPositionQuery = isTrue(attributes
+                .getProperty("enablePostPositionQuery"));
+
+
+        GeneratedMethodBean generatedMethodBean = new GeneratedMethodBean(methodName,
+                list,
+                enableSelectByExample,
+                enableUpdateByExample,
+                enablePostPositionQuery);
+
+
+        generatedMethod.setGeneratedMethodList(generatedMethodBean);
+
+    }
+
     protected void parseJavaTypeResolver(Context context, Node node) {
         JavaTypeResolverConfiguration javaTypeResolverConfiguration = new JavaTypeResolverConfiguration();
 
@@ -653,6 +729,32 @@ public class MyBatisGeneratorConfigurationParser {
             }
         }
     }
+
+    protected void parseJavaPoServiceGenerator(Context context, Node node) {
+        JavaPoServiceGeneratorConfiguration javaPoServiceGeneratorConfiguration = new JavaPoServiceGeneratorConfiguration();
+        context.setJavaPoServiceGeneratorConfiguration(javaPoServiceGeneratorConfiguration);
+
+        Properties attributes = parseAttributes(node);
+        String targetPackage = attributes.getProperty("targetPackage"); //$NON-NLS-1$
+        String targetProject = attributes.getProperty("targetProject"); //$NON-NLS-1$
+
+        javaPoServiceGeneratorConfiguration.setTargetPackage(targetPackage);
+        javaPoServiceGeneratorConfiguration.setTargetProject(targetProject);
+
+        NodeList nodeList = node.getChildNodes();
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node childNode = nodeList.item(i);
+
+            if (childNode.getNodeType() != Node.ELEMENT_NODE) {
+                continue;
+            }
+
+            if ("property".equals(childNode.getNodeName())) { //$NON-NLS-1$
+                parseProperty(javaPoServiceGeneratorConfiguration, childNode);
+            }
+        }
+    }
+
 
     private void parseJavaClientGenerator(Context context, Node node) {
         JavaClientGeneratorConfiguration javaClientGeneratorConfiguration = new JavaClientGeneratorConfiguration();

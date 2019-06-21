@@ -1,5 +1,5 @@
 /**
- *    Copyright 2006-2017 the original author or authors.
+ *    Copyright 2006-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -369,7 +369,7 @@ public abstract class BaseRules implements Rules {
      * Implements the rule for generating an example class. The class should be
      * generated if the selectByExample or deleteByExample or countByExample
      * methods are allowed.
-     * 
+     * 1
      * @return true if the example class should be generated
      */
     @Override
@@ -384,6 +384,24 @@ public abstract class BaseRules implements Rules {
             return false;
         }
 
+        boolean rc = tableConfiguration.isSelectByExampleStatementEnabled()
+                || tableConfiguration.isDeleteByExampleStatementEnabled()
+                || tableConfiguration.isCountByExampleStatementEnabled()
+                || tableConfiguration.isUpdateByExampleStatementEnabled();
+
+        return rc;
+    }
+
+    @Override
+    public boolean generatePoServiceClass() {
+        if (introspectedTable.getContext().getJavaPoServiceGeneratorConfiguration() == null) {
+            // this is a model only context - don't generate the example class
+            return false;
+        }
+
+        if (isModelOnly) {
+            return false;
+        }
         boolean rc = tableConfiguration.isSelectByExampleStatementEnabled()
                 || tableConfiguration.isDeleteByExampleStatementEnabled()
                 || tableConfiguration.isCountByExampleStatementEnabled()

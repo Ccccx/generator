@@ -24,16 +24,20 @@ import static org.mybatis.generator.internal.util.StringUtility.stringHasValue;
 import static org.mybatis.generator.internal.util.messages.Messages.getString;
 
 /**
- * @author cx 单独存放Example文件
+ * @author chengjz
+ * @version 1.0
+ * @date 2019-06-20 11:10
  */
-public class JavaExampleGeneratorConfiguration extends PropertyHolder {
+public class JavaPoServiceGeneratorConfiguration extends PropertyHolder {
 
     private String targetPackage;
 
     private String targetProject;
 
-
-    public JavaExampleGeneratorConfiguration() {
+    /**
+     *
+     */
+    public JavaPoServiceGeneratorConfiguration() {
         super();
     }
 
@@ -54,7 +58,7 @@ public class JavaExampleGeneratorConfiguration extends PropertyHolder {
     }
 
     public XmlElement toXmlElement() {
-        XmlElement answer = new XmlElement("javaExampleGenerator"); //$NON-NLS-1$
+        XmlElement answer = new XmlElement("javaModelGenerator"); //$NON-NLS-1$
 
         if (targetPackage != null) {
             answer.addAttribute(new Attribute("targetPackage", targetPackage)); //$NON-NLS-1$
@@ -76,7 +80,7 @@ public class JavaExampleGeneratorConfiguration extends PropertyHolder {
 
         if (!stringHasValue(targetPackage)) {
             errors.add(getString("ValidationError.12", //$NON-NLS-1$
-                    "JavaExampleGenerator", contextId)); //$NON-NLS-1$
+                    "JavaModelGenerator", contextId)); //$NON-NLS-1$
         }
     }
 }

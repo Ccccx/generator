@@ -1,5 +1,5 @@
 /**
- *    Copyright 2006-2017 the original author or authors.
+ *    Copyright 2006-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,21 +15,19 @@
  */
 package org.mybatis.generator.config;
 
-import static org.mybatis.generator.internal.util.EqualsUtil.areEqual;
-import static org.mybatis.generator.internal.util.HashCodeUtil.SEED;
-import static org.mybatis.generator.internal.util.HashCodeUtil.hash;
-import static org.mybatis.generator.internal.util.StringUtility.composeFullyQualifiedTableName;
-import static org.mybatis.generator.internal.util.StringUtility.isTrue;
-import static org.mybatis.generator.internal.util.StringUtility.stringHasValue;
-import static org.mybatis.generator.internal.util.messages.Messages.getString;
+import org.mybatis.generator.api.dom.xml.Attribute;
+import org.mybatis.generator.api.dom.xml.XmlElement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mybatis.generator.api.dom.xml.Attribute;
-import org.mybatis.generator.api.dom.xml.XmlElement;
+import static org.mybatis.generator.internal.util.EqualsUtil.areEqual;
+import static org.mybatis.generator.internal.util.HashCodeUtil.SEED;
+import static org.mybatis.generator.internal.util.HashCodeUtil.hash;
+import static org.mybatis.generator.internal.util.StringUtility.*;
+import static org.mybatis.generator.internal.util.messages.Messages.getString;
 
 /**
  * The Class TableConfiguration.
@@ -59,6 +57,8 @@ public class TableConfiguration extends PropertyHolder {
     private Map<IgnoredColumn, Boolean> ignoredColumns;
 
     private GeneratedKey generatedKey;
+
+    private GeneratedMethod generatedMethod;
 
     private String selectByPrimaryKeyQueryId;
 
@@ -276,6 +276,14 @@ public class TableConfiguration extends PropertyHolder {
 
     public void setGeneratedKey(GeneratedKey generatedKey) {
         this.generatedKey = generatedKey;
+    }
+
+    public GeneratedMethod getGeneratedMethod() {
+        return generatedMethod;
+    }
+
+    public void setGeneratedMethod(GeneratedMethod generatedMethod) {
+        this.generatedMethod = generatedMethod;
     }
 
     public String getAlias() {

@@ -1,5 +1,5 @@
 /**
- *    Copyright 2006-2018 the original author or authors.
+ *    Copyright 2006-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,9 +15,6 @@
  */
 package org.mybatis.generator.api;
 
-import java.util.List;
-import java.util.Properties;
-
 import org.mybatis.generator.api.dom.java.Field;
 import org.mybatis.generator.api.dom.java.Interface;
 import org.mybatis.generator.api.dom.java.Method;
@@ -25,6 +22,9 @@ import org.mybatis.generator.api.dom.java.TopLevelClass;
 import org.mybatis.generator.api.dom.xml.Document;
 import org.mybatis.generator.api.dom.xml.XmlElement;
 import org.mybatis.generator.config.Context;
+
+import java.util.List;
+import java.util.Properties;
 
 /**
  * This class includes no-operation methods for almost every method in the
@@ -295,6 +295,12 @@ public abstract class PluginAdapter implements Plugin {
     @Override
     public boolean modelExampleClassGenerated(TopLevelClass topLevelClass,
             IntrospectedTable introspectedTable) {
+        return true;
+    }
+
+    @Override
+    public boolean modelPoServiceGenerated(TopLevelClass topLevelClass,
+                                              IntrospectedTable introspectedTable) {
         return true;
     }
 

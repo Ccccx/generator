@@ -1,5 +1,5 @@
 /**
- *    Copyright 2006-2017 the original author or authors.
+ *    Copyright 2006-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -54,6 +54,8 @@ public class Context extends PropertyHolder {
     private JavaClientGeneratorConfiguration javaClientGeneratorConfiguration;
     /** 生成Example接口配置，对应<javaExampleGenerator>元素，包装成 JavaClientGeneratorConfiguration 对象*/
     private JavaExampleGeneratorConfiguration javaExampleGeneratorConfiguration;
+    /** 生成POService接口配置，对应<javaPoServiceGenerator>元素，包装成 JavaClientGeneratorConfiguration 对象*/
+    private JavaPoServiceGeneratorConfiguration javaPoServiceGeneratorConfiguration;
     /** 解析每一个<table>元素，并包装成一个一个的TableConfiguration对象 */
     private ArrayList<TableConfiguration> tableConfigurations;
     /** 生成对象样式，对应context元素的defaultModelType属性(attribute) */
@@ -212,6 +214,15 @@ public class Context extends PropertyHolder {
             JavaModelGeneratorConfiguration javaModelGeneratorConfiguration) {
         this.javaModelGeneratorConfiguration = javaModelGeneratorConfiguration;
     }
+
+    public JavaPoServiceGeneratorConfiguration getJavaPoServiceGeneratorConfiguration() {
+        return javaPoServiceGeneratorConfiguration;
+    }
+
+    public void setJavaPoServiceGeneratorConfiguration(JavaPoServiceGeneratorConfiguration javaPoServiceGeneratorConfiguration) {
+        this.javaPoServiceGeneratorConfiguration = javaPoServiceGeneratorConfiguration;
+    }
+
     public void setJavaModelGeneratorConfiguration(
             JavaExampleGeneratorConfiguration javaExampleGeneratorConfiguration) {
         this.javaExampleGeneratorConfiguration = javaExampleGeneratorConfiguration;
@@ -519,7 +530,8 @@ public class Context extends PropertyHolder {
                 callback.checkCancel();
                 // 初始化生成规则、包和表名
                 introspectedTable.initialize();
-                introspectedTable.calculateGenerators(warnings, callback); // 添加解析器参数
+                // 添加解析器参数 生成文件参数
+                introspectedTable.calculateGenerators(warnings, callback);
                 generatedJavaFiles.addAll(introspectedTable
                         .getGeneratedJavaFiles()); // 生成Java类 *Example
                 generatedXmlFiles.addAll(introspectedTable

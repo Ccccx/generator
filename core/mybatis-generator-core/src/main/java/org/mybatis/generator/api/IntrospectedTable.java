@@ -500,7 +500,9 @@ public abstract class IntrospectedTable {
         calculateJavaClientAttributes(); // mapper
         calculateModelAttributes();// 原本是 (dto) example在一起，现在将他们拆分 这里只会得到model
         calculateExampleAttributes(); // 这里加入新的model
-        calculatePoServiceAttributes();
+        if (context.getJavaPoServiceGeneratorConfiguration() != null) {
+            calculatePoServiceAttributes();
+        }
         calculateXmlAttributes(); // xml
 
         if (tableConfiguration.getModelType() == ModelType.HIERARCHICAL) {

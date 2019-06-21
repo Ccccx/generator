@@ -216,7 +216,9 @@ public class PoServiceGenerator extends AbstractJavaGenerator {
 
 
         GeneratedMethod generatedMethods = introspectedTable.getTableConfiguration().getGeneratedMethod();
-
+        if (generatedMethods == null) {
+            return;
+        }
 
 
         FullyQualifiedJavaType example = new FullyQualifiedJavaType(
@@ -265,9 +267,13 @@ public class PoServiceGenerator extends AbstractJavaGenerator {
 
 
     private void generatedUpdateMethod(TopLevelClass topLevelClass, String mapperFiledName) {
-        Map<String, IntrospectedColumn> javaBeansFieldMap = getJavaBeansFieldMap();
 
         GeneratedMethod generatedMethods = introspectedTable.getTableConfiguration().getGeneratedMethod();
+        if (generatedMethods == null) {
+            return;
+        }
+
+        Map<String, IntrospectedColumn> javaBeansFieldMap = getJavaBeansFieldMap();
 
         FullyQualifiedJavaType example = new FullyQualifiedJavaType(
                 introspectedTable.getExampleType());

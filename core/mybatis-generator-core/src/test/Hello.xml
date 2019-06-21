@@ -43,23 +43,23 @@
         </jdbcConnection>
         <!--model 和 example位置-->
         <javaModelGenerator targetPackage="dto" targetProject="E:\IDEA\generator\core\mybatis-generator-core\src\test\java">
-            <property name="enableSubPackages" value="true" />
+
         </javaModelGenerator>
         <!-- 新加入标签，将生成的 Example文件放到指定包下，官方是和 javaModelGenerator 在一个包下，不支持单独配置-->
-        <javaExampleGenerator targetPackage="exampleModel" targetProject="E:\IDEA\generator\core\mybatis-generator-core\src\test\java">
-            <property name="enableSubPackages" value="true" />
+        <javaExampleGenerator targetPackage="dto" targetProject="E:\IDEA\generator\core\mybatis-generator-core\src\test\java">
+
         </javaExampleGenerator>
         <!--po 生成的位置-->
         <javaPoServiceGenerator targetPackage="po" targetProject="E:\IDEA\generator\core\mybatis-generator-core\src\test\java">
-            <property name="enableSubPackages" value="true" />
+
         </javaPoServiceGenerator>
         <!--mapping文件位置-->
         <sqlMapGenerator targetPackage="mapping"  targetProject="E:\IDEA\generator\core\mybatis-generator-core\src\test\java">
-            <property name="enableSubPackages" value="true" />
+
         </sqlMapGenerator>
         <!--XML位置-->
         <javaClientGenerator type="XMLMAPPER" targetPackage="dao" targetProject="E:\IDEA\generator\core\mybatis-generator-core\src\test\java">
-            <property name="enableSubPackages" value="true" />
+
         </javaClientGenerator>
         <!--要生成的表名-->
         <table tableName="pay_order" domainObjectName="PayOrder"
@@ -73,13 +73,10 @@
                 <generatedMethod methodName="payOrder"
                                  columns="pay_order_no,pay_channel_code,pay_state"
                                  enableSelectByExample="true"
-                                 enableUpdateByExample="true"
-                                 enablePostPositionQuery="true"
                 />
 
                 <generatedMethod methodName="payChannel"
                                  columns="pay_channel_code,pay_state"
-                                 enableSelectByExample="true"
                                  enableUpdateByExample="true"
                 />
             </generatedMethods>

@@ -45,14 +45,14 @@ public class UserPoService {
     private UserMapper userMapper;
 
     /**
-     * 只要配置了javaPoServiceGenerator标签就好默认生成
+     * javaPoServiceGenerator标签默认生成
      */
     public User selectByPrimaryKey(Long id) {
         return userMapper.selectByPrimaryKey(id);
     }
 
     /**
-     * 只要配置了javaPoServiceGenerator标签就好默认生成
+     * javaPoServiceGenerator标签默认生成
      */
     public int updateByPrimaryKeySelective(User record) {
         return userMapper.updateByPrimaryKeySelective(record);

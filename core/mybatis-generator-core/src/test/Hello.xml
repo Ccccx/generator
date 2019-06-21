@@ -21,8 +21,8 @@
         <!--数据库连接-->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
                         connectionURL="jdbc:mysql://cx:3306/userdb?useUnicode=true&amp;characterEncoding=UTF-8"
-                        userId="root"
-                        password="meiyoumima.0">
+                        userId="test"
+                        password="test">
         </jdbcConnection>
         <!--model 和 example位置-->
         <javaModelGenerator targetPackage="dto" targetProject="E:\IDEA\generator\core\mybatis-generator-core\src\test\java"/>

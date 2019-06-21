@@ -124,8 +124,8 @@ public class ShellRunner {
              * 那么创建一个VerboseProgressCallback（VerboseProgressCallback只是调用了System.out打印出了执行过程而已）
              *
              */
-            ProgressCallback progressCallback = new VerboseProgressCallback()/*arguments.containsKey(VERBOSE) ? new VerboseProgressCallback()
-                    : null*/;
+            ProgressCallback progressCallback = arguments.containsKey(VERBOSE) ? new VerboseProgressCallback()
+                    : null;
             /**
              *  执行真正的MBG创建过程
              *  注意，这里的contexts是通过-contextids传入的需要的上下文id列表；

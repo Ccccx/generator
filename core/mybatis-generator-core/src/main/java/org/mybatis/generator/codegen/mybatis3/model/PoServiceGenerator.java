@@ -71,6 +71,7 @@ public class PoServiceGenerator extends AbstractJavaGenerator {
         topLevelClass.addImportedType(this.service);
         topLevelClass.addImportedType(this.autowired);
         topLevelClass.addImportedType(this.list);
+        topLevelClass.addImportedType(this.resource);
 
         FullyQualifiedJavaType mapper = new FullyQualifiedJavaType(introspectedTable.getMyBatis3JavaMapperType());
 
